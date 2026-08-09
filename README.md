@@ -2,7 +2,7 @@
 
 A personal collection of reusable Agent Skills for software engineering across multiple stacks and coding agents.
 
-This repository is the single source of truth for custom skills such as `loops-nuxt` and future skills like `loops-flutter`, `loops-react-native`, `loops-ios`, `loops-android`, and other reusable engineering workflows.
+This repository is the single source of truth for custom skills such as `project-flow` and `loops-nuxt`, and future skills like `loops-flutter`, `loops-react-native`, `loops-ios`, `loops-android`, and other reusable engineering workflows.
 
 ## Repository structure
 
@@ -14,6 +14,9 @@ cyril-agent-skill/
 ├── docs/
 │   └── portability.md          # Adapting skills for different agents
 ├── skills/
+│   ├── project-flow/
+│   │   ├── SKILL.md            # Portable skill instructions
+│   │   └── README.md           # Skill-specific usage notes
 │   └── loops-nuxt/
 │       ├── SKILL.md            # Portable skill instructions
 │       └── README.md           # Skill-specific usage notes
@@ -56,6 +59,7 @@ Repository-wide documentation, including the portability guide.
 
 | Skill | Stack | Purpose |
 |-------|-------|---------|
+| [project-flow](skills/project-flow) | Any (stack-agnostic) | Orchestrates a project from discovery through feature-by-feature implementation, with persistent Markdown context and human approval gates. |
 | [loops-nuxt](skills/loops-nuxt) | Nuxt / Vue | Autonomous red/green implementation and validation loop. |
 
 ## Installation
@@ -71,6 +75,7 @@ npx skills add https://github.com/<username>/cyril-agent-skill --list
 
 # Install one skill
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-nuxt
+npx skills add https://github.com/<username>/cyril-agent-skill --skill project-flow
 
 # Install all skills
 npx skills add https://github.com/<username>/cyril-agent-skill --all
