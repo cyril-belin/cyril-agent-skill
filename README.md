@@ -62,6 +62,60 @@ Repository-wide documentation, including the portability guide.
 | [project-flow](skills/project-flow) | Any (stack-agnostic) | Orchestrates a project from discovery through feature-by-feature implementation, with persistent Markdown context and human approval gates. |
 | [loops-nuxt](skills/loops-nuxt) | Nuxt / Vue | Autonomous red/green implementation and validation loop. |
 
+## Recommended prerequisites
+
+`cyril-agent-skill` contains **orchestration** skills (`project-flow`, the `loops-*` implementation loops). It is designed to sit on top of existing high-quality engineering skills rather than duplicate them — `project-flow` and the `loops-*` skills invoke or benefit from these companion skills when they are installed, but do not vendor or require them directly.
+
+### JSMastery Pro Skills
+
+Repository: [jsmastery-pro/skills](https://github.com/jsmastery-pro/skills)
+
+```bash
+npx skills add https://github.com/jsmastery-pro/skills
+```
+
+Provides the general engineering workflow skills this collection assumes are available: `scope`, `architect`, `develop`, `check`, `test`, `debug`, `document`, `audit`, `sync`, and related workflow skills.
+
+### Matt Pocock Skills
+
+Repository: [mattpocock/skills](https://github.com/mattpocock/skills)
+
+```bash
+npx skills add https://github.com/mattpocock/skills
+```
+
+This is a larger collection; not every skill in it is required. The ones this workflow specifically calls out or benefits from are:
+
+- `grill-me`
+- `domain-modeling`
+- `prototype`
+- `research`
+- `codebase-design`
+- `improve-codebase-architecture`
+- `to-spec`
+- `implement`
+- `tdd`
+- `diagnosing-bugs`
+- `code-review`
+- `handoff`
+- `writing-for-agents`
+
+Install the ones relevant to your project rather than the whole collection if you prefer a smaller footprint.
+
+### Notes on third-party skills
+
+- Third-party skills remain owned and maintained by their original authors. `cyril-agent-skill` does not copy or redistribute their implementations — it only references them by name.
+- Run `npx skills update` periodically to keep installed upstream skills current.
+- A missing companion skill should not make the portable core unusable where a graceful fallback is possible (e.g. `project-flow` can still orchestrate without `grill-me`, asking questions directly instead). The *full* intended workflow, however, assumes these companions are installed.
+
+### Recommended installation order
+
+1. Install JSMastery Pro skills.
+2. Install the relevant Matt Pocock skills.
+3. Install `cyril-agent-skill`.
+4. Install stack-specific official skills and MCP/tooling where applicable (e.g. the Nuxt MCP for `loops-nuxt`).
+5. Configure any agent-specific integration, such as the Devin Stop hook for `loops-nuxt` (see **Agent-specific setup** below).
+
 ## Installation
 
 Install the whole collection or individual skills with the [open `skills` CLI](https://github.com/vercel-labs/skills):
