@@ -1,0 +1,15 @@
+{
+  "_comment": "Devin Stop hook for loops-nuxt. Place this under the 'hooks' key in your Devin user config (%APPDATA%\\devin\\config.json on Windows, ~/.config/devin/config.json elsewhere) or in a project's .devin/hooks.v1.json. It blocks the agent from stopping while .devin/.loops-nuxt-active exists.",
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const fs=require('fs'); if(fs.existsSync('.devin/.loops-nuxt-active')) console.log(JSON.stringify({decision:'block',reason:'loops-nuxt validation loop is active. Validate the change before stopping, or delete .devin/.loops-nuxt-active to bypass.'}));\"",
+          "timeout": 5
+        }
+      ]
+    }
+  ]
+}

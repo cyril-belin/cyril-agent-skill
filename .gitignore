@@ -1,0 +1,24 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Secrets / environment
+.env
+.env.*
+*.pem
+*.key
+
+# Agent marker files (should only exist in target projects, not this repo)
+.devin/.loops-nuxt-active
