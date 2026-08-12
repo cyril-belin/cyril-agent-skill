@@ -1,12 +1,12 @@
 {
-  "_comment": "Devin Stop hook for loops-flutter. Place this under the 'hooks' key in your Devin user config (%APPDATA%\\devin\\config.json on Windows, ~/.config/devin/config.json elsewhere) or in a project's .devin/hooks.v1.json. It blocks the agent from stopping while .devin/.loops-flutter-active exists. Coexists safely with the loops-nuxt stop hook because each only checks its own marker file.",
+  "_comment": "Devin Stop hook for loops-flutter. Place this under the 'hooks' key in your Devin user config (%APPDATA%\\devin\\config.json on Windows, ~/.config/devin/config.json elsewhere) or in a project's .devin/hooks.v1.json. It blocks the agent from stopping while .agents/state/loops-flutter.active exists. For backward compatibility during migration, it also recognizes the legacy marker .devin/.loops-flutter-active. Coexists safely with the loops-nuxt stop hook because each only checks its own marker file.",
   "Stop": [
     {
       "matcher": "",
       "hooks": [
         {
           "type": "command",
-          "command": "node -e \"const fs=require('fs'); if(fs.existsSync('.devin/.loops-flutter-active')) console.log(JSON.stringify({decision:'block',reason:'loops-flutter validation loop is active. Validate the change before stopping, or delete .devin/.loops-flutter-active to bypass.'}));\"",
+          "command": "node -e \"const fs=require('fs'); const newMarker='.agents/state/loops-flutter.active'; const oldMarker='.devin/.loops-flutter-active'; if(fs.existsSync(newMarker) || fs.existsSync(oldMarker)) console.log(JSON.stringify({decision:'block',reason:'loops-flutter validation loop is active. Validate the change before stopping, or delete .agents/state/loops-flutter.active to bypass.'}));\"",
           "timeout": 5
         }
       ]

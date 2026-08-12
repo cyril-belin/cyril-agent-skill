@@ -41,11 +41,11 @@ If in doubt, prefer invoking the skill whenever the user wants code that must be
 
 Create a loop marker file at the start and remove it at the end. This lets agent stop-hooks prevent premature termination while the loop is running.
 
-The default marker path is `<project-root>/.devin/.loops-flutter-active` to align with the Devin stop-hook integration. If your agent uses a different workspace directory or hook convention, the agent-specific integration should document the adjusted path.
+The default marker path is `<project-root>/.agents/state/loops-flutter.active`. This is the universal loop-state convention used across all `loops-*` skills. An agent-specific integration may enforce this state through its native lifecycle mechanism (for example, Devin's Stop hook); such mechanisms are documented under `integrations/<agent>/` and are not required for the skill to function.
 
-1. At start: resolve the project root, then write the marker file containing the current ISO timestamp and the task summary.
+1. At start: resolve the project root, create `.agents/state/` if it does not exist, then write the marker file containing the current ISO timestamp and the task summary.
 2. At successful end: delete the marker file.
-3. If blocked and stopping: leave the file in place, include the blocker in your final report, and tell the user to delete the marker manually if they want to bypass the stop-hook.
+3. If blocked and stopping: leave the file in place, include the blocker in your final report, and tell the user to delete the marker manually if they want to bypass any active stop enforcement.
 
 ## 1. Detect the project shape
 
@@ -183,8 +183,12 @@ If blocked:
 - What was already tried.
 - The exact human decision or missing dependency required.
 
-## Bypass instructions
+## Bypass and portability
 
-- To disable the stop-hook for a session, delete the loop marker file (`.devin/.loops-flutter-active` by default).
+- To disable any active stop enforcement for a session, delete the loop marker file (`.agents/state/loops-flutter.active` by default).
 - To skip the loop entirely, do not invoke `/loops-flutter`; issue instructions normally.
 - To adjust the loop, edit the installed skill file in your agent's skills directory.
+
+### Portability note
+
+This skill is agent-neutral. It assumes only that the agent can read files, run shell commands, search the codebase, invoke other skills, and use MCP tools if configured. Agent-specific lifecycle enforcement (such as a Stop hook) belongs in `integrations/<agent>/loops-flutter/` and is optional.

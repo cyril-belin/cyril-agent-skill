@@ -2,7 +2,9 @@
 
 A personal collection of reusable Agent Skills for software engineering across multiple stacks and coding agents.
 
-This repository is the single source of truth for custom skills such as `project-flow` and `loops-nuxt`, and future skills like `loops-flutter`, `loops-react-native`, `loops-ios`, `loops-android`, and other reusable engineering workflows.
+This repository is the single source of truth for custom skills such as `project-flow` and `loops-nuxt`, and stack-specific implementation loops such as `loops-flutter`, plus future skills like `loops-react-native`, `loops-ios`, `loops-android`, and other reusable engineering workflows.
+
+The skills are designed to be **agent-neutral** at their core. Agent-specific lifecycle enforcement (for example, Devin's Stop hook) is layered separately under `integrations/<agent>/`.
 
 ## Repository structure
 
@@ -12,7 +14,10 @@ cyril-agent-skill/
 ├── LICENSE
 ├── .gitignore
 ├── docs/
-│   └── portability.md          # Adapting skills for different agents
+│   ├── portability.md          # Adapting skills for different agents
+│   └── loop-integration-contract.md  # Universal contract for loop integrations
+├── templates/
+│   └── AGENTS.loops.md         # Optional project-level loop policy fallback
 ├── skills/
 │   ├── project-flow/
 │   │   ├── SKILL.md            # Portable skill instructions
@@ -51,7 +56,7 @@ skills/loops-flutter/SKILL.md
 
 ### `integrations/`
 
-Agent-specific wiring. Not every agent needs an integration. For Devin, `loops-nuxt` needs a Stop hook to prevent the agent from stopping while the loop marker is present.
+Agent-specific wiring. Not every agent needs an integration. For Devin, `loops-nuxt` and `loops-flutter` provide Stop hooks to prevent the agent from stopping while a loop marker is present. See `integrations/README.md` for the architecture and `docs/loop-integration-contract.md` for the universal contract.
 
 ### `scripts/`
 
@@ -68,6 +73,30 @@ Repository-wide documentation, including the portability guide.
 | [project-flow](skills/project-flow) | Any (stack-agnostic) | Orchestrates a project from discovery through feature-by-feature implementation, with persistent Markdown context and human approval gates. |
 | [loops-nuxt](skills/loops-nuxt) | Nuxt / Vue | Autonomous red/green implementation and validation loop. |
 | [loops-flutter](skills/loops-flutter) | Flutter / Dart | Autonomous red/green implementation and validation loop. |
+
+## Architecture
+
+The collection is organized in three layers:
+
+1. **Portable skills** — `skills/` contains the agent-neutral core of each skill. These files use the standard Agent Skills format and avoid agent-specific APIs, paths, or configuration.
+2. **Universal contract** — `docs/loop-integration-contract.md` defines how any agent or IDE should integrate a `loops-*` skill: marker convention, approval-gate preservation, validation loop, safety limit, marker cleanup, and reporting. `templates/AGENTS.loops.md` provides an optional project-level fallback policy for agents without native lifecycle hooks.
+3. **Agent-specific adapters** — `integrations/<agent>/` adds optional enforcement layers for agents that provide a supported native mechanism (for example, Devin's Stop hook). Adapters are not required for the skill to work.
+
+This design means the collection works on any Agent Skills-compatible agent even if no adapter exists. Devin currently has the strongest lifecycle enforcement because it supports the Stop hook; other agents can still run the full loop using the skill instructions alone.
+
+## Compatibility levels
+
+### Level 1 — Agent Skills compatible
+
+The agent discovers and executes `SKILL.md`. The loop works through instructions and validation semantics. This is the baseline for any Agent Skills-compatible agent.
+
+### Level 2 — Agent Skills + project instruction support
+
+The agent also reads `AGENTS.md` or equivalent project instructions. You can include the fallback policy from `templates/AGENTS.loops.md` to reinforce loop semantics when the agent has no native lifecycle hook.
+
+### Level 3 — Native lifecycle enforcement
+
+An agent-specific integration prevents premature stopping through a supported native mechanism. Devin currently has this integration in the repository. Other agents can add adapters once their supported mechanisms are verified.
 
 ## Recommended prerequisites
 
@@ -173,10 +202,16 @@ For each hook:
    - Linux/macOS: `~/.config/devin/config.json`
 2. Merge the `Stop` array under the `hooks` key. Do not replace existing settings.
 3. If you have multiple loop stop-hooks, append each `Stop` entry to the existing `Stop` array. Each hook independently guards its own marker file, so `loops-nuxt` and `loops-flutter` can coexist safely.
+4. Add `.agents/state/` to your project's `.gitignore` so loop marker files are not committed:
+
+   ```gitignore
+   # Agent loop state
+   .agents/state/
+   ```
 
 ### Other agents
 
-See [`docs/portability.md`](docs/portability.md) for notes on adapting skills to Claude Code, Codex, Windsurf, and other Agent Skills-compatible agents.
+See [`docs/portability.md`](docs/portability.md) and [`docs/loop-integration-contract.md`](docs/loop-integration-contract.md) for notes on adapting skills to Claude Code, Codex, Windsurf, and other Agent Skills-compatible agents. If the agent reads `AGENTS.md`, you can include the fallback policy from [`templates/AGENTS.loops.md`](templates/AGENTS.loops.md) to reinforce loop semantics when the agent has no native lifecycle hook.
 
 ## Adding a new skill
 

@@ -1,12 +1,12 @@
 {
-  "_comment": "Devin Stop hook for loops-nuxt. Place this under the 'hooks' key in your Devin user config (%APPDATA%\\devin\\config.json on Windows, ~/.config/devin/config.json elsewhere) or in a project's .devin/hooks.v1.json. It blocks the agent from stopping while .devin/.loops-nuxt-active exists.",
+  "_comment": "Devin Stop hook for loops-nuxt. Place this under the 'hooks' key in your Devin user config (%APPDATA%\\devin\\config.json on Windows, ~/.config/devin/config.json elsewhere) or in a project's .devin/hooks.v1.json. It blocks the agent from stopping while .agents/state/loops-nuxt.active exists. For backward compatibility during migration, it also recognizes the legacy marker .devin/.loops-nuxt-active.",
   "Stop": [
     {
       "matcher": "",
       "hooks": [
         {
           "type": "command",
-          "command": "node -e \"const fs=require('fs'); if(fs.existsSync('.devin/.loops-nuxt-active')) console.log(JSON.stringify({decision:'block',reason:'loops-nuxt validation loop is active. Validate the change before stopping, or delete .devin/.loops-nuxt-active to bypass.'}));\"",
+          "command": "node -e \"const fs=require('fs'); const newMarker='.agents/state/loops-nuxt.active'; const oldMarker='.devin/.loops-nuxt-active'; if(fs.existsSync(newMarker) || fs.existsSync(oldMarker)) console.log(JSON.stringify({decision:'block',reason:'loops-nuxt validation loop is active. Validate the change before stopping, or delete .agents/state/loops-nuxt.active to bypass.'}));\"",
           "timeout": 5
         }
       ]

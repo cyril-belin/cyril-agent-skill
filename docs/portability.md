@@ -10,7 +10,7 @@ A portable skill should only contain:
 
 - `name` and `description` in the frontmatter.
 - Domain-specific instructions (what to detect, what to validate, how to diagnose).
-- Relative file references (e.g., `package.json`, `nuxt.config.ts`, `.devin/.loops-nuxt-active`).
+- Relative file references (e.g., `package.json`, `nuxt.config.ts`, `.agents/state/loops-nuxt.active`).
 - Generic tool names where possible (read, write, exec, grep, search, MCP).
 
 ## What belongs in agent integrations
@@ -29,18 +29,18 @@ A portable skill should only contain:
 - Validation commands come from `package.json` scripts and the package manager.
 - The agent can read files, run shell commands, search the codebase, and invoke other skills.
 - A Nuxt MCP is available for framework-level questions.
-- The stop-hook checks for a marker file. The default marker path is `.devin/.loops-nuxt-active`.
+- The stop-hook checks for a marker file. The universal marker convention is `.agents/state/loops-<stack>.active` (for example, `.agents/state/loops-nuxt.active`). Legacy Devin integrations used `.devin/.loops-nuxt-active` for backward compatibility.
 
 ### Devin
 
-Devin supports the `Stop` lifecycle hook. The integration is in `integrations/devin/loops-nuxt/`. No unsupported APIs are used.
+Devin supports the `Stop` lifecycle hook. The integration is in `integrations/devin/loops-nuxt/`. It uses the universal `.agents/state/loops-nuxt.active` marker, with backward compatibility for the legacy `.devin/.loops-nuxt-active` marker during migration. No unsupported APIs are used.
 
 ### Claude Code
 
 Claude Code does not have a `Stop` hook in the same form as Devin. To adapt `loops-nuxt`:
 
-- Keep the marker file convention or move it to `.claude/.loops-nuxt-active`.
-- Add a reminder in `CLAUDE.md` or the project instructions: "Do not stop until the marker is removed and validation passes."
+- Use the universal marker file convention: `.agents/state/loops-nuxt.active`.
+- Add a reminder in `CLAUDE.md` or the project instructions, or include the fallback policy from `templates/AGENTS.loops.md`: "Do not stop until the marker is removed and validation passes."
 - Skill invocation via slash commands is not standard in Claude Code; users can paste the skill prompt or use a custom command.
 
 ### Codex
@@ -51,20 +51,22 @@ Codex uses Agent Skills natively. Install with:
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-nuxt
 ```
 
-For the stop-hook behavior, Codex does not currently expose a `Stop` hook. The 5-iteration safety limit in `SKILL.md` still prevents runaway loops. The marker file is informational unless Codex later adds a comparable lifecycle hook.
+For the stop-hook behavior, Codex does not currently expose a `Stop` hook. The 5-iteration safety limit in `SKILL.md` still prevents runaway loops. The marker file is informational unless Codex later adds a comparable lifecycle hook. You can reinforce loop semantics by including the fallback policy from `templates/AGENTS.loops.md` in the project's `AGENTS.md`.
 
 ### Windsurf
 
-Windsurf can load skills from `.codeium/<channel>/skills/` or `.devin/skills/`. Use `npx skills add` with `--agent windsurf` or copy the skill directory manually. The stop-hook is Devin-specific, so Windsurf would need its own lifecycle integration if one becomes available.
+Windsurf can load skills from `.codeium/<channel>/skills/` or `.devin/skills/`. Use `npx skills add` with `--agent windsurf` or copy the skill directory manually. The Devin stop-hook is not used by Windsurf; use the universal `.agents/state/loops-<stack>.active` marker and, if desired, include the fallback policy from `templates/AGENTS.loops.md` in the project's `AGENTS.md`.
 
 ### Other agents
 
 For any Agent Skills-compatible agent:
 
 1. Install `skills/loops-nuxt/` into the agent's skills directory.
-2. Adapt the marker path and stop mechanism to whatever the agent supports.
-3. Keep the validation and MCP rules unchanged.
-4. Do not weaken the 5-iteration safety limit.
+2. Use the universal marker path `.agents/state/loops-<stack>.active` (for example, `.agents/state/loops-nuxt.active`) unless the agent explicitly requires a different convention.
+3. Adapt the stop mechanism only to whatever the agent actually supports.
+4. Keep the validation and MCP rules unchanged.
+5. Do not weaken the 5-iteration safety limit.
+6. See `docs/loop-integration-contract.md` for the full contract.
 
 ## Avoiding agent lock-in
 

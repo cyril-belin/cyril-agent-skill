@@ -50,7 +50,7 @@ It differentiates between Flutter applications, Flutter packages/plugins, and pu
 
 For Devin, install the provided stop-hook so the loop cannot be interrupted until the marker file is removed. See `integrations/devin/loops-flutter/` in this collection.
 
-For other agents, the loop marker is `<project-root>/.devin/.loops-flutter-active` by default. Adapt the path and hook mechanism to the agent's lifecycle conventions.
+For other agents, the loop marker is `<project-root>/.agents/state/loops-flutter.active` by default, following the universal loop-state convention. Adapt the path and hook mechanism only to whatever the agent's lifecycle conventions require.
 
 ## Safety
 
