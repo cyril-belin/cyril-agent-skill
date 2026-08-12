@@ -25,7 +25,10 @@ cyril-agent-skill/
 │   ├── loops-nuxt/
 │   │   ├── SKILL.md            # Portable skill instructions
 │   │   └── README.md           # Skill-specific usage notes
-│   └── loops-flutter/
+│   ├── loops-flutter/
+│   │   ├── SKILL.md            # Portable skill instructions
+│   │   └── README.md           # Skill-specific usage notes
+│   └── loops-react-native/
 │       ├── SKILL.md            # Portable skill instructions
 │       └── README.md           # Skill-specific usage notes
 ├── integrations/
@@ -33,7 +36,10 @@ cyril-agent-skill/
 │       ├── loops-nuxt/
 │       │   ├── stop-hook.json  # Devin-specific stop-hook template
 │       │   └── README.md       # Devin integration instructions
-│       └── loops-flutter/
+│       ├── loops-flutter/
+│       │   ├── stop-hook.json  # Devin-specific stop-hook template
+│       │   └── README.md       # Devin integration instructions
+│       └── loops-react-native/
 │           ├── stop-hook.json  # Devin-specific stop-hook template
 │           └── README.md       # Devin integration instructions
 └── scripts/                    # Optional helper scripts
@@ -73,6 +79,7 @@ Repository-wide documentation, including the portability guide.
 | [project-flow](skills/project-flow) | Any (stack-agnostic) | Orchestrates a project from discovery through feature-by-feature implementation, with persistent Markdown context and human approval gates. |
 | [loops-nuxt](skills/loops-nuxt) | Nuxt / Vue | Autonomous red/green implementation and validation loop. |
 | [loops-flutter](skills/loops-flutter) | Flutter / Dart | Autonomous red/green implementation and validation loop. |
+| [loops-react-native](skills/loops-react-native) | React Native / Expo | Autonomous red/green implementation and validation loop. |
 
 ## Architecture
 
@@ -156,13 +163,25 @@ For `loops-flutter`, install the official upstream Flutter and Dart skills plus 
 
 These official upstream skills and MCP remain owned and maintained by the Flutter and Dart teams. Update them independently using `npx skills update -g` or by refreshing the MCP server alongside your Flutter/Dart SDK.
 
+### Official Expo / React Native Agent Skills and MCP
+
+For `loops-react-native`, install the official upstream Expo skills plus the Expo MCP:
+
+- Official Expo / React Native skills: [expo/skills](https://github.com/expo/skills)
+  - Framework: `expo-app-clip`, `expo-brownfield`, `expo-data-fetching`, `expo-dev-client`, `expo-dom`, `expo-examples`, `expo-migrate-module`, `expo-module`, `expo-native-ui`, `expo-project-structure`, `expo-router`, `expo-skill-feedback`, `expo-tailwind-setup`, `expo-ui`, `expo-upgrade`, `expo-web-to-native`
+  - EAS / delivery: `eas-app-stores`, `eas-hosting`, `eas-observe`, `eas-simulator`, `eas-update-insights`, `eas-workflows`
+  - Evaluation: `expo-skill-eval`
+- Expo MCP: configured as the remote HTTP server `https://mcp.expo.dev/mcp` in your agent's MCP config. Local runtime capabilities (simulator screenshots, tap interactions, DevTools) additionally require the `expo-mcp` package in the project and a development server launched with `EXPO_UNSTABLE_MCP_SERVER=1 npx expo start`.
+
+These official upstream skills and MCP remain owned and maintained by Expo. Update them independently using `npx skills update -g` and by reconnecting the MCP server as Expo evolves its tooling.
+
 ### Recommended installation order
 
 1. Install JSMastery Pro skills.
 2. Install the relevant Matt Pocock skills.
 3. Install `cyril-agent-skill`.
-4. Install stack-specific official skills and MCP/tooling where applicable (e.g. the Nuxt MCP for `loops-nuxt`, or the official Flutter/Dart skills and `dart mcp-server` for `loops-flutter`).
-5. Configure any agent-specific integration, such as the Devin Stop hook for `loops-nuxt` or `loops-flutter` (see **Agent-specific setup** below).
+4. Install stack-specific official skills and MCP/tooling where applicable (e.g. the Nuxt MCP for `loops-nuxt`, the official Flutter/Dart skills and `dart mcp-server` for `loops-flutter`, or the official Expo skills and Expo MCP for `loops-react-native`).
+5. Configure any agent-specific integration, such as the Devin Stop hook for `loops-nuxt`, `loops-flutter`, or `loops-react-native` (see **Agent-specific setup** below).
 
 ## Installation
 
@@ -178,6 +197,7 @@ npx skills add https://github.com/<username>/cyril-agent-skill --list
 # Install one skill
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-nuxt
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-flutter
+npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-react-native
 npx skills add https://github.com/<username>/cyril-agent-skill --skill project-flow
 
 # Install all skills
@@ -194,6 +214,7 @@ After installing a loop skill, add its Devin stop-hook so the loop cannot be int
 
 - `loops-nuxt`: copy the `Stop` array from [`integrations/devin/loops-nuxt/stop-hook.json`](integrations/devin/loops-nuxt/stop-hook.json). See [`integrations/devin/loops-nuxt/README.md`](integrations/devin/loops-nuxt/README.md) for details.
 - `loops-flutter`: copy the `Stop` array from [`integrations/devin/loops-flutter/stop-hook.json`](integrations/devin/loops-flutter/stop-hook.json). See [`integrations/devin/loops-flutter/README.md`](integrations/devin/loops-flutter/README.md) for details.
+- `loops-react-native`: copy the `Stop` array from [`integrations/devin/loops-react-native/stop-hook.json`](integrations/devin/loops-react-native/stop-hook.json). See [`integrations/devin/loops-react-native/README.md`](integrations/devin/loops-react-native/README.md) for details.
 
 For each hook:
 
