@@ -17,12 +17,18 @@ cyril-agent-skill/
 │   ├── project-flow/
 │   │   ├── SKILL.md            # Portable skill instructions
 │   │   └── README.md           # Skill-specific usage notes
-│   └── loops-nuxt/
+│   ├── loops-nuxt/
+│   │   ├── SKILL.md            # Portable skill instructions
+│   │   └── README.md           # Skill-specific usage notes
+│   └── loops-flutter/
 │       ├── SKILL.md            # Portable skill instructions
 │       └── README.md           # Skill-specific usage notes
 ├── integrations/
 │   └── devin/
-│       └── loops-nuxt/
+│       ├── loops-nuxt/
+│       │   ├── stop-hook.json  # Devin-specific stop-hook template
+│       │   └── README.md       # Devin integration instructions
+│       └── loops-flutter/
 │           ├── stop-hook.json  # Devin-specific stop-hook template
 │           └── README.md       # Devin integration instructions
 └── scripts/                    # Optional helper scripts
@@ -61,6 +67,7 @@ Repository-wide documentation, including the portability guide.
 |-------|-------|---------|
 | [project-flow](skills/project-flow) | Any (stack-agnostic) | Orchestrates a project from discovery through feature-by-feature implementation, with persistent Markdown context and human approval gates. |
 | [loops-nuxt](skills/loops-nuxt) | Nuxt / Vue | Autonomous red/green implementation and validation loop. |
+| [loops-flutter](skills/loops-flutter) | Flutter / Dart | Autonomous red/green implementation and validation loop. |
 
 ## Recommended prerequisites
 
@@ -108,13 +115,25 @@ Install the ones relevant to your project rather than the whole collection if yo
 - Run `npx skills update` periodically to keep installed upstream skills current.
 - A missing companion skill should not make the portable core unusable where a graceful fallback is possible (e.g. `project-flow` can still orchestrate without `grill-me`, asking questions directly instead). The *full* intended workflow, however, assumes these companions are installed.
 
+### Official Flutter/Dart Agent Skills and MCP
+
+For `loops-flutter`, install the official upstream Flutter and Dart skills plus the Dart/Flutter MCP:
+
+- Official Flutter skills: [flutter/agent-plugins/skills](https://github.com/flutter/agent-plugins/tree/main/skills)
+  - `flutter-add-integration-test`, `flutter-add-widget-preview`, `flutter-add-widget-test`, `flutter-apply-architecture-best-practices`, `flutter-build-responsive-layout`, `flutter-fix-layout-issues`, `flutter-implement-json-serialization`, `flutter-setup-declarative-routing`, `flutter-setup-localization`, `flutter-use-http-package`
+- Official Dart skills: [dart-lang/skills](https://github.com/dart-lang/skills)
+  - `dart-add-unit-test`, `dart-build-cli-app`, `dart-collect-coverage`, `dart-fix-runtime-errors`, `dart-generate-test-mocks`, `dart-migrate-to-checks-package`, `dart-resolve-package-conflicts`, `dart-run-static-analysis`, `dart-setup-ffi-assets`, `dart-use-ffigen`, `dart-use-pattern-matching`, `dart-use-primary-constructors`
+- Dart/Flutter MCP: configured as `dart mcp-server` in your agent's MCP config.
+
+These official upstream skills and MCP remain owned and maintained by the Flutter and Dart teams. Update them independently using `npx skills update -g` or by refreshing the MCP server alongside your Flutter/Dart SDK.
+
 ### Recommended installation order
 
 1. Install JSMastery Pro skills.
 2. Install the relevant Matt Pocock skills.
 3. Install `cyril-agent-skill`.
-4. Install stack-specific official skills and MCP/tooling where applicable (e.g. the Nuxt MCP for `loops-nuxt`).
-5. Configure any agent-specific integration, such as the Devin Stop hook for `loops-nuxt` (see **Agent-specific setup** below).
+4. Install stack-specific official skills and MCP/tooling where applicable (e.g. the Nuxt MCP for `loops-nuxt`, or the official Flutter/Dart skills and `dart mcp-server` for `loops-flutter`).
+5. Configure any agent-specific integration, such as the Devin Stop hook for `loops-nuxt` or `loops-flutter` (see **Agent-specific setup** below).
 
 ## Installation
 
@@ -129,6 +148,7 @@ npx skills add https://github.com/<username>/cyril-agent-skill --list
 
 # Install one skill
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-nuxt
+npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-flutter
 npx skills add https://github.com/<username>/cyril-agent-skill --skill project-flow
 
 # Install all skills
@@ -141,13 +161,18 @@ Skills are discovered from the `skills/` directory using the Agent Skills conven
 
 ### Devin
 
-After installing `loops-nuxt`, add the Devin stop-hook so the loop cannot be interrupted prematurely:
+After installing a loop skill, add its Devin stop-hook so the loop cannot be interrupted prematurely:
 
-1. Copy the `Stop` array from [`integrations/devin/loops-nuxt/stop-hook.json`](integrations/devin/loops-nuxt/stop-hook.json) into your Devin user config.
+- `loops-nuxt`: copy the `Stop` array from [`integrations/devin/loops-nuxt/stop-hook.json`](integrations/devin/loops-nuxt/stop-hook.json). See [`integrations/devin/loops-nuxt/README.md`](integrations/devin/loops-nuxt/README.md) for details.
+- `loops-flutter`: copy the `Stop` array from [`integrations/devin/loops-flutter/stop-hook.json`](integrations/devin/loops-flutter/stop-hook.json). See [`integrations/devin/loops-flutter/README.md`](integrations/devin/loops-flutter/README.md) for details.
+
+For each hook:
+
+1. Open your Devin user config.
    - Windows: `%APPDATA%\devin\config.json`
    - Linux/macOS: `~/.config/devin/config.json`
-2. Merge it under the `hooks` key. Do not replace existing settings.
-3. See [`integrations/devin/loops-nuxt/README.md`](integrations/devin/loops-nuxt/README.md) for details.
+2. Merge the `Stop` array under the `hooks` key. Do not replace existing settings.
+3. If you have multiple loop stop-hooks, append each `Stop` entry to the existing `Stop` array. Each hook independently guards its own marker file, so `loops-nuxt` and `loops-flutter` can coexist safely.
 
 ### Other agents
 

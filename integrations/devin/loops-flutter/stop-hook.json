@@ -1,0 +1,15 @@
+{
+  "_comment": "Devin Stop hook for loops-flutter. Place this under the 'hooks' key in your Devin user config (%APPDATA%\\devin\\config.json on Windows, ~/.config/devin/config.json elsewhere) or in a project's .devin/hooks.v1.json. It blocks the agent from stopping while .devin/.loops-flutter-active exists. Coexists safely with the loops-nuxt stop hook because each only checks its own marker file.",
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const fs=require('fs'); if(fs.existsSync('.devin/.loops-flutter-active')) console.log(JSON.stringify({decision:'block',reason:'loops-flutter validation loop is active. Validate the change before stopping, or delete .devin/.loops-flutter-active to bypass.'}));\"",
+          "timeout": 5
+        }
+      ]
+    }
+  ]
+}

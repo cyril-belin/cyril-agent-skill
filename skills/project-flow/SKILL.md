@@ -158,7 +158,7 @@ Valid approvals: "approved", "go", "ok implement", or an equivalent explicit con
 
 Delegate to the appropriate skill(s) for the stack and task:
 
-- A stack-specific implementation loop when one exists (e.g. `/loops-nuxt` for Nuxt/Vue) — preferred whenever applicable, since it already owns implementation + validation.
+- A stack-specific implementation loop when one exists (e.g. `/loops-nuxt` for Nuxt/Vue, `/loops-flutter` for Flutter/Dart) — preferred whenever applicable, since it already owns implementation + validation.
 - Otherwise compose from `/develop`, `/implement`, `/tdd`, `/test`, `/debug`, `/diagnosing-bugs`, `/check`, `/code-review`, `/research` as needed.
 
 `project-flow` orchestrates the project lifecycle and approval gates; it does not duplicate a stack loop's low-level validation.
@@ -198,4 +198,4 @@ Read targeted project files instead of re-running interviews. Invoke specialist 
 
 ## Stack-agnostic boundary
 
-`project-flow` works identically for Nuxt, Flutter, React Native, Android, iOS, backend, or any other stack. It never assumes a specific framework. Stack-specific implementation/validation loops (`loops-nuxt`, future `loops-flutter`, `loops-react-native`, `loops-android`, `loops-ios`) are separate skills it delegates to in step 6.
+`project-flow` works identically for Nuxt, Flutter, React Native, Android, iOS, backend, or any other stack. It never assumes a specific framework. Stack-specific implementation/validation loops (`loops-nuxt`, `loops-flutter`, `loops-react-native`, `loops-android`, `loops-ios`) are separate skills it delegates to in step 6.
