@@ -1,0 +1,15 @@
+{
+  "_comment": "Devin Stop hook for loops-android. Place this under the 'hooks' key in your Devin user config (%APPDATA%\\devin\\config.json on Windows, ~/.config/devin/config.json elsewhere) or in a project's .devin/hooks.v1.json. It blocks the agent from stopping while .agents/state/loops-android.active exists. Coexists safely with other loop stop hooks because each only checks its own marker file.",
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node -e \"const fs=require('fs'); const marker='.agents/state/loops-android.active'; if(fs.existsSync(marker)) console.log(JSON.stringify({decision:'block',reason:'loops-android validation loop is active. Validate the change before stopping, or delete .agents/state/loops-android.active to bypass.'}));\"",
+          "timeout": 5
+        }
+      ]
+    }
+  ]
+}

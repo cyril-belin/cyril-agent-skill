@@ -2,7 +2,7 @@
 
 A personal collection of reusable Agent Skills for software engineering across multiple stacks and coding agents.
 
-This repository is the single source of truth for custom skills such as `project-flow` and `loops-nuxt`, and stack-specific implementation loops such as `loops-flutter`, plus future skills like `loops-react-native`, `loops-ios`, `loops-android`, and other reusable engineering workflows.
+This repository is the single source of truth for custom skills such as `project-flow` and `loops-nuxt`, and stack-specific implementation loops such as `loops-flutter`, `loops-react-native`, and `loops-android`, plus future skills like `loops-ios` and other reusable engineering workflows.
 
 The skills are designed to be **agent-neutral** at their core. Agent-specific lifecycle enforcement (for example, Devin's Stop hook) is layered separately under `integrations/<agent>/`.
 
@@ -28,7 +28,10 @@ cyril-agent-skill/
 │   ├── loops-flutter/
 │   │   ├── SKILL.md            # Portable skill instructions
 │   │   └── README.md           # Skill-specific usage notes
-│   └── loops-react-native/
+│   ├── loops-react-native/
+│   │   ├── SKILL.md            # Portable skill instructions
+│   │   └── README.md           # Skill-specific usage notes
+│   └── loops-android/
 │       ├── SKILL.md            # Portable skill instructions
 │       └── README.md           # Skill-specific usage notes
 ├── integrations/
@@ -39,7 +42,10 @@ cyril-agent-skill/
 │       ├── loops-flutter/
 │       │   ├── stop-hook.json  # Devin-specific stop-hook template
 │       │   └── README.md       # Devin integration instructions
-│       └── loops-react-native/
+│       ├── loops-react-native/
+│       │   ├── stop-hook.json  # Devin-specific stop-hook template
+│       │   └── README.md       # Devin integration instructions
+│       └── loops-android/
 │           ├── stop-hook.json  # Devin-specific stop-hook template
 │           └── README.md       # Devin integration instructions
 └── scripts/                    # Optional helper scripts
@@ -62,7 +68,7 @@ skills/loops-flutter/SKILL.md
 
 ### `integrations/`
 
-Agent-specific wiring. Not every agent needs an integration. For Devin, `loops-nuxt` and `loops-flutter` provide Stop hooks to prevent the agent from stopping while a loop marker is present. See `integrations/README.md` for the architecture and `docs/loop-integration-contract.md` for the universal contract.
+Agent-specific wiring. Not every agent needs an integration. For Devin, `loops-nuxt`, `loops-flutter`, `loops-react-native`, and `loops-android` provide Stop hooks to prevent the agent from stopping while a loop marker is present. See `integrations/README.md` for the architecture and `docs/loop-integration-contract.md` for the universal contract.
 
 ### `scripts/`
 
@@ -80,6 +86,7 @@ Repository-wide documentation, including the portability guide.
 | [loops-nuxt](skills/loops-nuxt) | Nuxt / Vue | Autonomous red/green implementation and validation loop. |
 | [loops-flutter](skills/loops-flutter) | Flutter / Dart | Autonomous red/green implementation and validation loop. |
 | [loops-react-native](skills/loops-react-native) | React Native / Expo | Autonomous red/green implementation and validation loop. |
+| [loops-android](skills/loops-android) | Native Android (Kotlin/Java) | Autonomous red/green implementation and validation loop. |
 
 ## Architecture
 
@@ -175,13 +182,31 @@ For `loops-react-native`, install the official upstream Expo skills plus the Exp
 
 These official upstream skills and MCP remain owned and maintained by Expo. Update them independently using `npx skills update -g` and by reconnecting the MCP server as Expo evolves its tooling.
 
+### Official Android Agent Skills and Android CLI
+
+For `loops-android`, install the official upstream Android skills plus the official Android CLI:
+
+- Official Android skills: [github.com/android/skills](https://github.com/android/skills), installed and updated via the official Android CLI (see below) — not via `npx skills add`.
+  - `android-cli`, `camerax`, `appfunctions`, `verified-email`, `adaptive`, `media3-cast-integration`, `navigation-3`, `r8-analyzer`, `engage-sdk-integration`, `play-billing-library-version-upgrade`, `play-policy-insights`, `perfetto-sql`, `perfetto-trace-analysis`, `android-intent-security`, `edge-to-edge`, `testing-setup`, `leanback-to-compose-tv-migration`, `wear-compose-m3`, `display-glasses-with-jetpack-compose-glimmer`, `agp-9-upgrade`, `migrate-xml-views-to-jetpack-compose`, `styles`.
+  - Install/update all of them for your agent with the [Android CLI](https://developer.android.com/tools/agents/android-cli):
+    ```bash
+    android skills add --agent=<your-agent> --all
+    ```
+    Run `android skills list --long` first to see the current catalog and installed status — the catalog evolves independently of this repository. Run `android skills add --agent=<your-agent> --skill=<name>` to install or update a single skill.
+- Android CLI: [developer.android.com/tools/agents/android-cli](https://developer.android.com/tools/agents/android-cli) (download/install instructions per OS on that page). Provides `android docs`, `android info`, `android sdk`, `android run`/`android install`, `android layout`/`android screen`, and `android skills`.
+- **No official Android MCP server currently exists.** `loops-android` uses the Android CLI as the Android-specific agent tooling layer instead. Do not substitute an unofficial Android MCP server.
+
+These official upstream skills and the Android CLI remain owned and maintained by Google/the Android team. `loops-android` orchestrates them; it does not redistribute or vendor their content. Update them independently with `android skills add --agent=<your-agent> --all` and `android update`.
+
+Real builds, tests, and runtime verification for `loops-android` additionally require, depending on the task: a JDK, Android SDK platforms/build-tools (`android sdk install ...`), ADB, an emulator or physical device, and optionally Android Studio. `loops-android` degrades gracefully and reports exactly what could not be validated when any of these are missing — see `skills/loops-android/SKILL.md`.
+
 ### Recommended installation order
 
 1. Install JSMastery Pro skills.
 2. Install the relevant Matt Pocock skills.
 3. Install `cyril-agent-skill`.
-4. Install stack-specific official skills and MCP/tooling where applicable (e.g. the Nuxt MCP for `loops-nuxt`, the official Flutter/Dart skills and `dart mcp-server` for `loops-flutter`, or the official Expo skills and Expo MCP for `loops-react-native`).
-5. Configure any agent-specific integration, such as the Devin Stop hook for `loops-nuxt`, `loops-flutter`, or `loops-react-native` (see **Agent-specific setup** below).
+4. Install stack-specific official skills and MCP/tooling where applicable (e.g. the Nuxt MCP for `loops-nuxt`, the official Flutter/Dart skills and `dart mcp-server` for `loops-flutter`, the official Expo skills and Expo MCP for `loops-react-native`, or the official Android skills and Android CLI for `loops-android`).
+5. Configure any agent-specific integration, such as the Devin Stop hook for `loops-nuxt`, `loops-flutter`, `loops-react-native`, or `loops-android` (see **Agent-specific setup** below).
 
 ## Installation
 
@@ -198,6 +223,7 @@ npx skills add https://github.com/<username>/cyril-agent-skill --list
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-nuxt
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-flutter
 npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-react-native
+npx skills add https://github.com/<username>/cyril-agent-skill --skill loops-android
 npx skills add https://github.com/<username>/cyril-agent-skill --skill project-flow
 
 # Install all skills
@@ -215,6 +241,7 @@ After installing a loop skill, add its Devin stop-hook so the loop cannot be int
 - `loops-nuxt`: copy the `Stop` array from [`integrations/devin/loops-nuxt/stop-hook.json`](integrations/devin/loops-nuxt/stop-hook.json). See [`integrations/devin/loops-nuxt/README.md`](integrations/devin/loops-nuxt/README.md) for details.
 - `loops-flutter`: copy the `Stop` array from [`integrations/devin/loops-flutter/stop-hook.json`](integrations/devin/loops-flutter/stop-hook.json). See [`integrations/devin/loops-flutter/README.md`](integrations/devin/loops-flutter/README.md) for details.
 - `loops-react-native`: copy the `Stop` array from [`integrations/devin/loops-react-native/stop-hook.json`](integrations/devin/loops-react-native/stop-hook.json). See [`integrations/devin/loops-react-native/README.md`](integrations/devin/loops-react-native/README.md) for details.
+- `loops-android`: copy the `Stop` array from [`integrations/devin/loops-android/stop-hook.json`](integrations/devin/loops-android/stop-hook.json). See [`integrations/devin/loops-android/README.md`](integrations/devin/loops-android/README.md) for details.
 
 For each hook:
 
@@ -222,7 +249,7 @@ For each hook:
    - Windows: `%APPDATA%\devin\config.json`
    - Linux/macOS: `~/.config/devin/config.json`
 2. Merge the `Stop` array under the `hooks` key. Do not replace existing settings.
-3. If you have multiple loop stop-hooks, append each `Stop` entry to the existing `Stop` array. Each hook independently guards its own marker file, so `loops-nuxt` and `loops-flutter` can coexist safely.
+3. If you have multiple loop stop-hooks, append each `Stop` entry to the existing `Stop` array. Each hook independently guards its own marker file, so `loops-nuxt`, `loops-flutter`, `loops-react-native`, and `loops-android` can coexist safely.
 4. Add `.agents/state/` to your project's `.gitignore` so loop marker files are not committed:
 
    ```gitignore

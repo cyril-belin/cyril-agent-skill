@@ -29,6 +29,8 @@ Devin supports a `Stop` lifecycle hook. The integration checks for a marker file
 
 - `integrations/devin/loops-nuxt/`
 - `integrations/devin/loops-flutter/`
+- `integrations/devin/loops-react-native/`
+- `integrations/devin/loops-android/`
 
 Each hook independently guards its own marker file, so multiple loops can coexist safely.
 

@@ -158,7 +158,7 @@ Valid approvals: "approved", "go", "ok implement", or an equivalent explicit con
 
 Delegate to the appropriate skill(s) for the stack and task:
 
-- A stack-specific implementation loop when one exists (e.g. `/loops-nuxt` for Nuxt/Vue, `/loops-flutter` for Flutter/Dart, `/loops-react-native` for React Native / Expo) — preferred whenever applicable, since it already owns implementation + validation.
+- A stack-specific implementation loop when one exists (e.g. `/loops-nuxt` for Nuxt/Vue, `/loops-flutter` for Flutter/Dart, `/loops-react-native` for React Native / Expo, `/loops-android` for native Android) — preferred whenever applicable, since it already owns implementation + validation.
 - Otherwise compose from `/develop`, `/implement`, `/tdd`, `/test`, `/debug`, `/diagnosing-bugs`, `/check`, `/code-review`, `/research` as needed.
 
 `project-flow` orchestrates the project lifecycle and approval gates; it does not duplicate a stack loop's low-level validation. For the contract a stack loop integration must honor (marker convention, approval gates, safety limit, cleanup, reporting), see `docs/loop-integration-contract.md`.
